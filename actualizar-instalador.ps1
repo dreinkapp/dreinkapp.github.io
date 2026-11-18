@@ -35,8 +35,18 @@ $bytes = $item.Length.ToString('N0', $es)
 $mib = ($item.Length / 1MB).ToString('0.0', $es)
 $size = "$bytes bytes ($mib MiB)"
 $shortSize = "$mib MiB"
+$appSize = [string]::Format($es, '{0:N0} MB', ($item.Length / 1MB))
+$today = (Get-Date).ToString('yyyy-MM-dd')
 
 $html = Get-Content -LiteralPath $Index -Raw -Encoding UTF8
+
+# Usuario y repositorio (bloque SITE) para reconstruir el enlace de descarga del JSON-LD.
+$site = @{}
+foreach ($key in 'user', 'repo') {
+  $match = [regex]::Match($html, "(?m)^\s*${key}:\s*'([^']*)'")
+  if (-not $match.Success) { throw "No se encontro '$key' en el bloque SITE de index.html" }
+  $site[$key] = $match.Groups[1].Value
+}
 
 $replacements = @(
   @{ Pattern = "sha256: '[0-9A-Fa-f]{64}'"; Value = "sha256: '$sha'" },
@@ -51,7 +61,10 @@ $replacements = @(
   @{ Pattern = 'id="version-tag">[^<]*<'; Value = "id=`"version-tag`">$version<" },
   @{ Pattern = 'id="fact-version">[^<]*<'; Value = "id=`"fact-version`">$version<" },
   @{ Pattern = 'id="eyebrow-version">[^<]*<'; Value = "id=`"eyebrow-version`">$version<" },
-  @{ Pattern = '(<(?:code|span)[^>]*class="install-file"[^>]*>)[^<]*(<)'; Value = "`$1$file`$2" }
+  @{ Pattern = '(<(?:code|span)[^>]*class="install-file"[^>]*>)[^<]*(<)'; Value = "`$1$file`$2" },
+  @{ Pattern = '"softwareVersion": "[^"]*"'; Value = "`"softwareVersion`": `"$version`"" },
+  @{ Pattern = '"fileSize": "[^"]*"'; Value = "`"fileSize`": `"$appSize`"" },
+  @{ Pattern = '"downloadUrl": "[^"]*"'; Value = "`"downloadUrl`": `"https://github.com/$($site['user'])/$($site['repo'])/releases/download/v$version/$file`"" }
 )
 
 foreach ($r in $replacements) {
@@ -70,8 +83,17 @@ $html = [regex]::Replace(
 
 [System.IO.File]::WriteAllText($Index, $html, (New-Object System.Text.UTF8Encoding($false)))
 
+# El sitemap lleva la fecha de la última versión publicada.
+$Sitemap = Join-Path $PSScriptRoot 'sitemap.xml'
+if (Test-Path -LiteralPath $Sitemap) {
+  $xml = Get-Content -LiteralPath $Sitemap -Raw -Encoding UTF8
+  $xml = [regex]::Replace($xml, '<lastmod>[^<]*</lastmod>', "<lastmod>$today</lastmod>")
+  [System.IO.File]::WriteAllText($Sitemap, $xml, (New-Object System.Text.UTF8Encoding($false)))
+}
+
 Write-Host 'Pagina actualizada:'
 Write-Host "  archivo   $file"
 Write-Host "  version   $version"
 Write-Host "  tamano    $size"
 Write-Host "  sha256    $sha"
+Write-Host "  sitemap   $today"

@@ -9,6 +9,65 @@
       content="Dreink: aplicación de escritorio para escribir y organizar libros. Editor con autoguardado, fichas de personajes, PDF/EPUB y copias de seguridad. Descarga para Windows."
     />
     <link rel="canonical" href="https://dreinkapp.github.io/" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="author" content="Esteban J" />
+
+    <!-- Datos estructurados: le dicen a Google qué es «Dreink» (programa, no blog). -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://dreinkapp.github.io/#web",
+            "url": "https://dreinkapp.github.io/",
+            "name": "Dreink",
+            "alternateName": "Dreink — editor de libros para Windows",
+            "inLanguage": "es",
+            "publisher": { "@id": "https://dreinkapp.github.io/#org" }
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://dreinkapp.github.io/#org",
+            "name": "Dreink",
+            "url": "https://dreinkapp.github.io/",
+            "logo": "https://dreinkapp.github.io/icon.png",
+            "founder": { "@type": "Person", "name": "Esteban J" },
+            "sameAs": ["https://github.com/dreinkapp/dreinkapp.github.io"]
+          },
+          {
+            "@type": "SoftwareApplication",
+            "@id": "https://dreinkapp.github.io/#app",
+            "name": "Dreink",
+            "url": "https://dreinkapp.github.io/",
+            "description": "Aplicación de escritorio para escribir y organizar libros: editor con autoguardado, fichas de personajes, PDF/EPUB, corrector en español y copias de seguridad.",
+            "applicationCategory": "ProductivityApplication",
+            "applicationSubCategory": "Editor de libros",
+            "operatingSystem": "Windows 10, Windows 11",
+            "softwareVersion": "1.0.0",
+            "inLanguage": "es",
+            "fileSize": "94 MB",
+            "screenshot": "https://dreinkapp.github.io/img/editor.webp",
+            "downloadUrl": "https://github.com/dreinkapp/dreinkapp.github.io/releases/download/v1.0.0/Dreink-1.0.0-setup.exe",
+            "installUrl": "https://dreinkapp.github.io/",
+            "publisher": { "@id": "https://dreinkapp.github.io/#org" },
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "EUR",
+              "availability": "https://schema.org/InStock"
+            },
+            "featureList": [
+              "Editor con autoguardado y conteo de palabras",
+              "Fichas de personajes con relaciones",
+              "Exportación a PDF y EPUB",
+              "Corrector ortográfico y gramatical en español sin conexión",
+              "Copias de seguridad en un archivo .drk"
+            ]
+          }
+        ]
+      }
+    </script>
 
     <!-- Vista previa al compartir el enlace (WhatsApp, X, Telegram, Discord). -->
     <meta property="og:type" content="website" />
@@ -775,58 +834,3 @@
       const { user, repo, version, file, size, shortSize, sha256 } = SITE;
       const base = `https://github.com/${user}/${repo}`;
       const downloadUrl = `${base}/releases/download/v${version}/${file}`;
-
-      for (const id of ['download', 'download-top']) {
-        const el = document.getElementById(id);
-        el.href = downloadUrl;
-        el.setAttribute('download', file);
-      }
-
-      document.getElementById('download-size').textContent = shortSize;
-      document.getElementById('fact-size').textContent = shortSize;
-      document.getElementById('hash-size').textContent = size;
-      document.getElementById('sha').textContent = sha256;
-      document.getElementById('version-tag').textContent = version;
-      document.getElementById('fact-version').textContent = version;
-      document.getElementById('eyebrow-version').textContent = version;
-      document.getElementById('releases').href = `${base}/releases`;
-      document.getElementById('repo-link').href = base;
-
-      if (SITE.apoyo) {
-        const caja = document.getElementById('support');
-        document.getElementById('support-link').href = SITE.apoyo;
-        caja.hidden = false;
-      }
-
-      document.title = `Dreink ${version} — Descargar para Windows`;
-      document.querySelectorAll('.install-file').forEach((el) => {
-        el.textContent = file;
-      });
-
-      const copyBtn = document.getElementById('copy-sha');
-      copyBtn.addEventListener('click', async () => {
-        try {
-          await navigator.clipboard.writeText(sha256);
-        } catch {
-          copyBtn.textContent = 'Selecciona y copia';
-          return;
-        }
-        copyBtn.textContent = 'Copiado';
-        copyBtn.dataset.done = '1';
-        setTimeout(() => {
-          copyBtn.textContent = 'Copiar';
-          copyBtn.dataset.done = '0';
-        }, 2000);
-      });
-
-      document.getElementById('theme-toggle').addEventListener('click', () => {
-        const root = document.documentElement;
-        const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-        root.dataset.theme = next;
-        try {
-          localStorage.setItem('dreink-theme', next);
-        } catch {}
-      });
-    </script>
-  </body>
-</html>

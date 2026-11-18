@@ -62,8 +62,50 @@ software.
    El script lee `dist\Dreink-1.0.0-setup.exe` (o la ruta que le pases), calcula
    el tamaño y el SHA-256, y reescribe `version`, `file`, `size`, `shortSize` y
    `sha256` en `index.html`, incluido el texto de reserva que se ve antes de que
-   corra el JavaScript.
+   corra el JavaScript. También pone al día la versión y el enlace de descarga de
+   los datos estructurados (JSON-LD) y la fecha `<lastmod>` de `sitemap.xml`.
 3. Sube el cambio al repositorio de la web.
+4. En [Search Console](https://search.google.com/search-console), *Inspección de
+   URL* → `https://dreinkapp.github.io/` → *Solicitar indexación*. Así Google
+   vuelve a leer la página y ve la versión nueva.
+
+## Aparecer en Google (una sola vez)
+
+La página ya trae lo que Google necesita: `robots.txt`, `sitemap.xml`, `canonical`,
+`description` y datos estructurados `SoftwareApplication` con el nombre «Dreink»
+(es decir, Google sabe que es un programa para Windows, no un blog). Lo que falta
+es que Google sepa que el sitio existe, y eso se hace desde Search Console:
+
+1. Entra en <https://search.google.com/search-console> con la cuenta dueña de
+   `dreinkapp`.
+2. **Añadir propiedad → Prefijo de URL** → `https://dreinkapp.github.io/`.
+   La propiedad «Dominio» no sirve aquí: exige un registro DNS que GitHub Pages
+   no permite.
+3. Verifica con **Etiqueta HTML**: copia la línea
+   `<meta name="google-site-verification" ...>` y pégala dentro de `<head>` en
+   `index.html`, entre la etiqueta `<title>` y el `canonical`. Sube el cambio,
+   vuelve a Search Console y pulsa *Verificar*. (También vale subir el archivo
+   `googlexxxx.html` que ofrece a la raíz del repositorio.)
+4. **Sitemaps** → escribe `sitemap.xml` → *Enviar*.
+5. **Inspección de URL** → pega `https://dreinkapp.github.io/` →
+   *Solicitar indexación*.
+6. Repite lo mismo en [Bing Webmaster Tools](https://www.bing.com/webmasters):
+   permite importar la propiedad desde Search Console y tarda menos.
+
+**Cuánto tarda:** entre 2 días y 3 semanas para empezar a salir al buscar «Dreink».
+Un dominio recién creado tarda más, y no hay forma de acelerarlo pagando: la
+indexación es gratuita y no se puede comprar.
+
+Mientras esperas, lo que más ayuda a que salga primero al buscar la marca:
+
+- Enlazar la página desde sitios reales: el README del repositorio, las notas del
+  release, tu perfil de GitHub, X, Reddit, foros de escritura. Con dos o tres
+  enlaces basta para una marca nueva.
+- Que «Dreink» esté en el `<title>`, el `<h1>` y el texto visible (ya está).
+- No comprar enlaces ni usar trucos: Google los detecta y retrasa la indexación.
+
+Para saber si ya entró, busca `site:dreinkapp.github.io` en Google. Si aparece la
+página, está indexada aunque todavía no salga al buscar «Dreink».
 
 ## Comprobaciones antes de dar el enlace
 
