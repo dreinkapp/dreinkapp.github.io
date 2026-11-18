@@ -103,8 +103,7 @@
     <script>
       try {
         const saved = localStorage.getItem('dreink-theme');
-        const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-        document.documentElement.dataset.theme = saved || (prefersLight ? 'light' : 'dark');
+        document.documentElement.dataset.theme = saved || 'dark';
       } catch {}
     </script>
 
