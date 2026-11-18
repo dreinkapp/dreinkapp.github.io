@@ -3,8 +3,8 @@
 Página estática de descarga de **Dreink 1.0.0**, la aplicación de escritorio para
 escribir y organizar libros.
 
-- Descarga: <https://github.com/sebacred/dreink-web/releases/latest>
-- Página publicada: `https://sebacred.github.io/dreink-web/`
+- Descarga: <https://github.com/dreinkapp/dreinkapp.github.io/releases/latest>
+- Página publicada: `https://dreinkapp.github.io/`
 
 Este repositorio contiene **solo la página** (`index.html`, `icon.png`) y el
 instalador como *asset* de un release. El código fuente de Dreink no está aquí:
