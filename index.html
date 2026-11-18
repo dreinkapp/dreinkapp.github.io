@@ -835,3 +835,58 @@
       const { user, repo, version, file, size, shortSize, sha256 } = SITE;
       const base = `https://github.com/${user}/${repo}`;
       const downloadUrl = `${base}/releases/download/v${version}/${file}`;
+
+      for (const id of ['download', 'download-top']) {
+        const el = document.getElementById(id);
+        el.href = downloadUrl;
+        el.setAttribute('download', file);
+      }
+
+      document.getElementById('download-size').textContent = shortSize;
+      document.getElementById('fact-size').textContent = shortSize;
+      document.getElementById('hash-size').textContent = size;
+      document.getElementById('sha').textContent = sha256;
+      document.getElementById('version-tag').textContent = version;
+      document.getElementById('fact-version').textContent = version;
+      document.getElementById('eyebrow-version').textContent = version;
+      document.getElementById('releases').href = `${base}/releases`;
+      document.getElementById('repo-link').href = base;
+
+      if (SITE.apoyo) {
+        const caja = document.getElementById('support');
+        document.getElementById('support-link').href = SITE.apoyo;
+        caja.hidden = false;
+      }
+
+      document.title = `Dreink ${version} — Descargar para Windows`;
+      document.querySelectorAll('.install-file').forEach((el) => {
+        el.textContent = file;
+      });
+
+      const copyBtn = document.getElementById('copy-sha');
+      copyBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(sha256);
+        } catch {
+          copyBtn.textContent = 'Selecciona y copia';
+          return;
+        }
+        copyBtn.textContent = 'Copiado';
+        copyBtn.dataset.done = '1';
+        setTimeout(() => {
+          copyBtn.textContent = 'Copiar';
+          copyBtn.dataset.done = '0';
+        }, 2000);
+      });
+
+      document.getElementById('theme-toggle').addEventListener('click', () => {
+        const root = document.documentElement;
+        const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+        root.dataset.theme = next;
+        try {
+          localStorage.setItem('dreink-theme', next);
+        } catch {}
+      });
+    </script>
+  </body>
+</html>
