@@ -548,6 +548,45 @@
         color: var(--text);
       }
 
+      footer .support {
+        flex-basis: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 20px;
+        align-items: baseline;
+        justify-content: space-between;
+        padding-bottom: 18px;
+        margin-bottom: 4px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      footer .support[hidden] {
+        display: none;
+      }
+
+      footer .support p {
+        margin: 0;
+        max-width: 620px;
+        line-height: 1.6;
+      }
+
+      footer .support strong {
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      footer .support-link {
+        color: var(--text);
+        font-weight: 600;
+        white-space: nowrap;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+
+      footer .support-link:hover {
+        color: var(--dreink);
+      }
+
       @media (prefers-reduced-motion: reduce) {
         html {
           scroll-behavior: auto;
@@ -706,6 +745,13 @@
 
     <footer>
       <div class="wrap">
+        <div class="support" id="support" hidden>
+          <p>
+            Dreink es gratis y sin cuenta. Si te sirve, puedes ayudar a pagar la
+            <strong>firma de código</strong>, que quita el aviso de Windows al instalar.
+          </p>
+          <a class="support-link" id="support-link" href="#" rel="noopener">Apoyar el proyecto →</a>
+        </div>
         <span>© 2026 Esteban J · Software propietario</span>
         <span>
           <a id="releases" href="#">Versiones</a> ·
@@ -727,6 +773,8 @@
         size: '98.570.366 bytes (94,0 MiB)',
         shortSize: '94,0 MiB',
         sha256: 'E7245641CAC33448466EC1C232B88A167C1A8B53F86EA344C7E36B47BB030A29',
+        // Enlace de apoyo (paypal.me/... o ko-fi.com/...). Vacío = no se muestra.
+        apoyo: '',
       };
 
       const { user, repo, version, file, size, shortSize, sha256 } = SITE;
@@ -748,6 +796,12 @@
       document.getElementById('eyebrow-version').textContent = version;
       document.getElementById('releases').href = `${base}/releases`;
       document.getElementById('repo-link').href = base;
+
+      if (SITE.apoyo) {
+        const caja = document.getElementById('support');
+        document.getElementById('support-link').href = SITE.apoyo;
+        caja.hidden = false;
+      }
 
       document.title = `Dreink ${version} — Descargar para Windows`;
       document.querySelectorAll('.install-file').forEach((el) => {
