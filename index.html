@@ -1,0 +1,765 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dreink 1.0.0 — Descargar para Windows</title>
+    <meta
+      name="description"
+      content="Dreink: aplicación de escritorio para escribir y organizar libros. Editor con autoguardado, fichas de personajes, PDF/EPUB y copias de seguridad. Descarga para Windows."
+    />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#131314" />
+    <link rel="icon" href="icon.png" />
+    <link rel="apple-touch-icon" href="icon.png" />
+
+    <!-- El día de la publicación, cambia `user` por tu usuario de GitHub en el bloque SITE del final. -->
+
+    <script>
+      try {
+        const saved = localStorage.getItem('dreink-theme');
+        const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+        document.documentElement.dataset.theme = saved || (prefersLight ? 'light' : 'dark');
+      } catch {}
+    </script>
+
+    <style>
+      :root {
+        --accent: #ffc403;
+        --accent-hover: #ffd23f;
+        --accent-ink: #1a1a1a;
+        --dreink: #cf6e0b;
+        --max: 960px;
+        --r: 3px;
+        --font: 'Roboto', 'Roboto Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --mono: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+      }
+
+      html[data-theme='dark'] {
+        --bg: #131314;
+        --surface: #0a0a0a;
+        --text: #e8e8e8;
+        --text-2: #9099a6;
+        --border: #2a3038;
+        --grid: rgba(255, 196, 3, 0.06);
+      }
+
+      html[data-theme='light'] {
+        --bg: #fcfcfc;
+        --surface: #ffffff;
+        --text: #171717;
+        --text-2: #5f6b7a;
+        --border: #e2e8f0;
+        --grid: rgba(207, 110, 11, 0.08);
+        --accent-ink: #1a1a1a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 84px;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font);
+        font-size: 16px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      a {
+        color: inherit;
+        text-underline-offset: 3px;
+      }
+
+      code {
+        font-family: var(--mono);
+        font-size: 0.92em;
+      }
+
+      a:focus-visible,
+      button:focus-visible,
+      summary:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+      }
+
+      .wrap {
+        width: 100%;
+        max-width: var(--max);
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      /* ---------- Cabecera ---------- */
+
+      header.top {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: color-mix(in srgb, var(--bg) 90%, transparent);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .top .wrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        height: 60px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        text-decoration: none;
+      }
+
+      .brand img {
+        width: 26px;
+        height: 26px;
+        object-fit: contain;
+      }
+
+      .tag {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        color: var(--text-2);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        padding: 0 6px;
+        line-height: 18px;
+      }
+
+      .top-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .theme {
+        font: inherit;
+        font-size: 13px;
+        color: var(--text-2);
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        padding: 6px 10px;
+        cursor: pointer;
+      }
+
+      .theme:hover {
+        color: var(--text);
+        border-color: var(--text-2);
+      }
+
+      /* ---------- Botones ---------- */
+
+      .btn {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 10px;
+        border: 1px solid transparent;
+        border-radius: var(--r);
+        padding: 14px 24px;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 1.2;
+        text-decoration: none;
+        transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+      }
+
+      .btn-primary {
+        background: var(--accent);
+        color: var(--accent-ink);
+      }
+
+      .btn-primary:hover {
+        background: var(--accent-hover);
+      }
+
+      .btn-primary .size {
+        font-weight: 500;
+        font-size: 13px;
+        opacity: 0.62;
+      }
+
+      .btn-small {
+        font-size: 14px;
+        padding: 8px 14px;
+        background: var(--accent);
+        color: var(--accent-ink);
+      }
+
+      .btn-small:hover {
+        background: var(--accent-hover);
+      }
+
+      /* ---------- Portada ---------- */
+
+      .hero {
+        position: relative;
+        border-bottom: 1px solid var(--border);
+        background-image: linear-gradient(var(--grid) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+        background-size: 52px 52px;
+        background-position: center top;
+      }
+
+      .hero::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse 75% 70% at 50% 0%, transparent 25%, var(--bg) 100%);
+        pointer-events: none;
+      }
+
+      .hero .wrap {
+        position: relative;
+        z-index: 1;
+        padding: 88px 24px 76px;
+        text-align: center;
+      }
+
+      .eyebrow {
+        margin: 0 0 16px;
+        font-size: 12px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--text-2);
+      }
+
+      h1 {
+        margin: 0 auto 16px;
+        max-width: 17ch;
+        font-size: clamp(32px, 5.6vw, 52px);
+        line-height: 1.06;
+        letter-spacing: -0.025em;
+        font-weight: 800;
+      }
+
+      h1 em {
+        font-style: normal;
+        color: var(--dreink);
+      }
+
+      .lead {
+        margin: 0 auto 30px;
+        max-width: 48ch;
+        color: var(--text-2);
+        font-size: 17.5px;
+      }
+
+      .note {
+        margin: 14px 0 0;
+        font-size: 13.5px;
+        color: var(--text-2);
+      }
+
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px 22px;
+        margin: 44px 0 0;
+        padding: 0;
+        list-style: none;
+        font-size: 13px;
+        color: var(--text-2);
+      }
+
+      .meta li {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+      }
+
+      .meta span {
+        color: var(--text);
+      }
+
+      /* ---------- Funciones ---------- */
+
+      section {
+        padding: 72px 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      section:last-of-type {
+        border-bottom: 0;
+      }
+
+      h2 {
+        margin: 0 0 34px;
+        font-size: clamp(22px, 3vw, 28px);
+        letter-spacing: -0.015em;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        overflow: hidden;
+      }
+
+      @media (max-width: 640px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .item {
+        background: var(--surface);
+        padding: 24px 26px;
+      }
+
+      .item h3 {
+        margin: 0 0 5px;
+        font-size: 15.5px;
+      }
+
+      .item p {
+        margin: 0;
+        font-size: 14.5px;
+        color: var(--text-2);
+      }
+
+      /* ---------- Instalar ---------- */
+
+      .steps {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        counter-reset: step;
+      }
+
+      .steps li {
+        counter-increment: step;
+        display: grid;
+        grid-template-columns: 28px minmax(0, 1fr);
+        gap: 14px;
+        padding: 14px 0;
+        border-top: 1px solid var(--border);
+        font-size: 15px;
+        color: var(--text-2);
+      }
+
+      .steps li:last-child {
+        border-bottom: 1px solid var(--border);
+      }
+
+      .steps li::before {
+        content: counter(step);
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--dreink);
+        line-height: 24px;
+        text-align: center;
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        height: 24px;
+      }
+
+      .steps strong {
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      details.hash {
+        margin-top: 26px;
+        font-size: 14px;
+        color: var(--text-2);
+      }
+
+      details.hash summary {
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      details.hash > div {
+        margin-top: 14px;
+      }
+
+      .hash-row {
+        display: flex;
+        gap: 8px;
+        align-items: stretch;
+        margin-bottom: 10px;
+      }
+
+      .hash-row code {
+        flex: 1;
+        min-width: 0;
+        padding: 11px 14px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        font-size: 12.5px;
+        line-height: 1.5;
+        word-break: break-all;
+        user-select: all;
+        color: var(--text);
+      }
+
+      .copy {
+        font: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 0 14px;
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        cursor: pointer;
+        white-space: nowrap;
+      }
+
+      .copy:hover {
+        border-color: var(--text-2);
+      }
+
+      .copy[data-done='1'] {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--accent-ink);
+      }
+
+      pre {
+        margin: 0 0 8px;
+        padding: 12px 14px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        overflow-x: auto;
+        font-family: var(--mono);
+        font-size: 12.5px;
+        line-height: 1.6;
+        color: var(--text);
+      }
+
+      /* ---------- Capturas ---------- */
+
+      .shot {
+        margin: 54px 0 0;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        overflow: hidden;
+        background: var(--surface);
+        box-shadow: 0 30px 70px -35px rgba(0, 0, 0, 0.8);
+      }
+
+      .shot img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      .strip {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 28px;
+      }
+
+      @media (max-width: 720px) {
+        .strip {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .strip figure {
+        margin: 0;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        overflow: hidden;
+        background: var(--surface);
+      }
+
+      .strip img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      .strip figcaption {
+        padding: 9px 12px;
+        border-top: 1px solid var(--border);
+        font-size: 11.5px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-2);
+      }
+
+      /* ---------- Pie ---------- */
+
+      footer {
+        padding: 32px 0 48px;
+        color: var(--text-2);
+        font-size: 13px;
+      }
+
+      footer .wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 22px;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+
+      footer a:hover {
+        color: var(--text);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        * {
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="top">
+      <div class="wrap">
+        <a class="brand" href="#inicio">
+          <img src="icon.png" alt="" width="26" height="26" />
+          <span>Dreink</span>
+          <span class="tag" id="version-tag">1.0.0</span>
+        </a>
+        <div class="top-right">
+          <button type="button" class="theme" id="theme-toggle" aria-label="Cambiar tema">
+            Tema
+          </button>
+          <a class="btn btn-small" id="download-top" href="#">Descargar</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="inicio">
+      <div class="hero">
+        <div class="wrap">
+          <p class="eyebrow">
+            Windows 10 y 11 · 64 bits · v<span id="eyebrow-version">1.0.0</span>
+          </p>
+          <h1>Escribe tu libro. <em>Dreink</em> se encarga del resto.</h1>
+          <p class="lead">
+            Editor con autoguardado, fichas de personajes, PDF y EPUB, y copias de seguridad.
+            Todo en tu equipo.
+          </p>
+
+          <a class="btn btn-primary" id="download" href="#">
+            Descargar para Windows
+            <span class="size" id="download-size">94,0 MiB</span>
+          </a>
+          <p class="note">Instalador sin firmar: Windows pedirá confirmación. Abajo te digo cómo.</p>
+
+          <ul class="meta">
+            <li>Versión <span id="fact-version">1.0.0</span></li>
+            <li>Tamaño <span id="fact-size">94,0 MiB</span></li>
+            <li>Licencia <span>Propietaria</span></li>
+          </ul>
+
+          <figure class="shot">
+            <img
+              src="img/editor.webp"
+              width="1232"
+              height="655"
+              alt="Editor de Dreink con un capítulo abierto: títulos, párrafos y el panel de formato a la derecha"
+            />
+          </figure>
+        </div>
+      </div>
+
+      <section id="funciones">
+        <div class="wrap">
+          <h2>Qué hace</h2>
+          <div class="grid">
+            <article class="item">
+              <h3>Escribe sin pensar en guardar</h3>
+              <p>Editor por secciones que guarda solo, con conteo de palabras y formato.</p>
+            </article>
+            <article class="item">
+              <h3>Corrige en español</h3>
+              <p>Ortografía, tipografía y gramática frecuente mientras escribes. Sin conexión.</p>
+            </article>
+            <article class="item">
+              <h3>Organiza el mundo del libro</h3>
+              <p>Biblioteca, fichas de personajes con relaciones, galería y progreso de lectura.</p>
+            </article>
+            <article class="item">
+              <h3>Exporta y guarda copias</h3>
+              <p>PDF y EPUB en tu equipo, y un archivo <code>.drk</code> con todo. Drive es opcional.</p>
+            </article>
+          </div>
+
+          <div class="strip">
+            <figure>
+              <img
+                src="img/libreria.webp"
+                width="1232"
+                height="655"
+                loading="lazy"
+                alt="Biblioteca de Dreink: portadas de los libros en una rejilla"
+              />
+              <figcaption>Biblioteca</figcaption>
+            </figure>
+            <figure>
+              <img
+                src="img/ficha.webp"
+                width="1232"
+                height="655"
+                loading="lazy"
+                alt="Ficha de un libro con portada, sinopsis, número de secciones y palabras"
+              />
+              <figcaption>Ficha del libro</figcaption>
+            </figure>
+            <figure>
+              <img
+                src="img/personajes.webp"
+                width="1232"
+                height="655"
+                loading="lazy"
+                alt="Fichas de personajes con relaciones y notas del libro"
+              />
+              <figcaption>Personajes</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section id="instalar">
+        <div class="wrap">
+          <h2>Instalar en dos minutos</h2>
+          <ol class="steps">
+            <li><span>Abre <code class="install-file">Dreink-1.0.0-setup.exe</code> y sigue el asistente.</span></li>
+            <li>
+              <span>
+                Si Windows avisa, pulsa <strong>Más información</strong> y luego
+                <strong>Ejecutar de todas formas</strong>. Solo si lo descargaste de aquí.
+              </span>
+            </li>
+            <li>
+              <span>
+                Listo. Tus libros se guardan en <code>%APPDATA%\Dreink</code>; reinstalar o
+                desinstalar no los borra.
+              </span>
+            </li>
+          </ol>
+
+          <details class="hash">
+            <summary>Verificar la descarga (SHA-256)</summary>
+            <div>
+              <div class="hash-row">
+                <code id="sha">E7245641CAC33448466EC1C232B88A167C1A8B53F86EA344C7E36B47BB030A29</code>
+                <button class="copy" type="button" id="copy-sha" data-done="0">Copiar</button>
+              </div>
+              <p style="margin: 0 0 10px">
+                <code class="install-file">Dreink-1.0.0-setup.exe</code> ·
+                <span id="hash-size">98.570.366 bytes (94,0 MiB)</span>
+              </p>
+              <pre><code>Get-FileHash .\<span class="install-file">Dreink-1.0.0-setup.exe</span> -Algorithm SHA256</code></pre>
+            </div>
+          </details>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <span>© 2026 Esteban J · Software propietario</span>
+        <span>
+          <a id="releases" href="#">Versiones</a> ·
+          <a id="repo-link" href="#">Repositorio</a> ·
+          <a href="https://myaccount.google.com/permissions" rel="noopener">Revocar Google</a>
+        </span>
+      </div>
+    </footer>
+
+    <script>
+      // ---------------------------------------------------------------------
+      // Configuración de la descarga. Cambia solo estas líneas al publicar.
+      // ---------------------------------------------------------------------
+      const SITE = {
+        user: 'sebacred', // usuario u organización de GitHub
+        repo: 'dreink-web', // repositorio público con el release
+        version: '1.0.0', // debe coincidir con la etiqueta del release (v + version)
+        file: 'Dreink-1.0.0-setup.exe',
+        size: '98.570.366 bytes (94,0 MiB)',
+        shortSize: '94,0 MiB',
+        sha256: 'E7245641CAC33448466EC1C232B88A167C1A8B53F86EA344C7E36B47BB030A29',
+      };
+
+      const { user, repo, version, file, size, shortSize, sha256 } = SITE;
+      const base = `https://github.com/${user}/${repo}`;
+      const downloadUrl = `${base}/releases/download/v${version}/${file}`;
+
+      for (const id of ['download', 'download-top']) {
+        const el = document.getElementById(id);
+        el.href = downloadUrl;
+        el.setAttribute('download', file);
+      }
+
+      document.getElementById('download-size').textContent = shortSize;
+      document.getElementById('fact-size').textContent = shortSize;
+      document.getElementById('hash-size').textContent = size;
+      document.getElementById('sha').textContent = sha256;
+      document.getElementById('version-tag').textContent = version;
+      document.getElementById('fact-version').textContent = version;
+      document.getElementById('eyebrow-version').textContent = version;
+      document.getElementById('releases').href = `${base}/releases`;
+      document.getElementById('repo-link').href = base;
+
+      document.title = `Dreink ${version} — Descargar para Windows`;
+      document.querySelectorAll('.install-file').forEach((el) => {
+        el.textContent = file;
+      });
+
+      const copyBtn = document.getElementById('copy-sha');
+      copyBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(sha256);
+        } catch {
+          copyBtn.textContent = 'Selecciona y copia';
+          return;
+        }
+        copyBtn.textContent = 'Copiado';
+        copyBtn.dataset.done = '1';
+        setTimeout(() => {
+          copyBtn.textContent = 'Copiar';
+          copyBtn.dataset.done = '0';
+        }, 2000);
+      });
+
+      document.getElementById('theme-toggle').addEventListener('click', () => {
+        const root = document.documentElement;
+        const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+        root.dataset.theme = next;
+        try {
+          localStorage.setItem('dreink-theme', next);
+        } catch {}
+      });
+    </script>
+  </body>
+</html>
