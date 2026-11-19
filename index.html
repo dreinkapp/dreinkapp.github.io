@@ -587,107 +587,50 @@
         color: var(--text-2);
       }
 
-      /* ---------- Feedback ---------- */
+      /* ---------- Contacto ---------- */
 
-      .feedback {
-        max-width: 620px;
-        margin-top: 22px;
-      }
-
-      .feedback-note {
+      .contact-note {
         margin: -14px 0 0;
         max-width: 56ch;
         font-size: 15px;
         color: var(--text-2);
       }
 
-      .feedback label {
-        display: block;
-        margin: 0 0 7px;
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--text-2);
-      }
-
-      .feedback textarea,
-      .feedback input[type='email'] {
-        width: 100%;
-        font: inherit;
-        font-size: 15px;
-        line-height: 1.5;
-        color: var(--text);
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--r);
-        padding: 12px 14px;
-      }
-
-      .feedback textarea {
-        min-height: 132px;
-        resize: vertical;
-      }
-
-      .feedback textarea::placeholder,
-      .feedback input[type='email']::placeholder {
-        color: var(--text-2);
-        opacity: 0.85;
-      }
-
-      .feedback textarea:focus,
-      .feedback input[type='email']:focus {
-        border-color: var(--text-2);
-      }
-
-      .feedback-row {
+      .contact-actions {
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
-        margin-top: 12px;
+        margin-top: 22px;
       }
 
-      .feedback-row input[type='email'] {
-        flex: 1 1 220px;
-        min-width: 0;
-      }
-
-      .feedback-row .btn {
+      .contact-actions .btn {
         border: 1px solid transparent;
         cursor: pointer;
         font-family: inherit;
-        padding: 12px 22px;
       }
 
-      .feedback-row .btn[disabled] {
-        opacity: 0.6;
-        cursor: progress;
-        transform: none;
+      .contact-actions .btn[hidden] {
+        display: none;
       }
 
-      .feedback-status {
+      .contact-actions .btn[data-done='1'] {
+        background: var(--surface);
+        border-color: var(--accent);
+        color: var(--text);
+      }
+
+      .contact-status {
         margin: 14px 0 0;
         font-size: 13.5px;
         color: var(--text-2);
       }
 
-      .feedback-status:empty {
+      .contact-status:empty {
         display: none;
       }
 
-      .feedback-status[data-ok='1'] {
-        color: var(--accent);
-      }
-
-      .feedback-status[data-ok='0'] {
-        color: var(--dreink);
-      }
-
-      /* Trampa antispam: invisible para las personas, visible para los bots. */
-      .honey {
-        position: absolute;
-        left: -9999px;
-        width: 1px;
-        height: 1px;
-        opacity: 0;
+      .contact-status a {
+        color: var(--text);
       }
 
       /* ---------- Pie ---------- */
@@ -899,55 +842,28 @@
         </div>
       </section>
 
-      <section id="feedback">
+      <section id="contacto">
         <div class="wrap">
-          <h2>Comentarios</h2>
-          <p class="feedback-note">Un problema, una idea o simplemente qué te parece Dreink.</p>
+          <h2>Contacto</h2>
+          <p class="contact-note">Un problema, una idea o simplemente qué te parece Dreink.</p>
 
-          <form
-            class="feedback"
-            id="feedback-form"
-            action="https://formsubmit.co/estebanquerecuto8@gmail.com"
-            method="POST"
-          >
-            <input type="hidden" name="_subject" value="Dreink — comentario" />
-            <input type="hidden" name="_template" value="table" />
-            <input type="hidden" name="_captcha" value="false" />
-            <input type="hidden" name="_next" value="https://dreinkapp.github.io/#feedback" />
+          <div class="contact-actions">
+            <button class="btn btn-small" type="button" id="copy-email" data-done="0">
+              Copiar correo
+            </button>
+            <a
+              class="btn btn-small"
+              id="whatsapp"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              hidden
+            >
+              WhatsApp
+            </a>
+          </div>
 
-            <input
-              class="honey"
-              type="text"
-              name="_honey"
-              tabindex="-1"
-              autocomplete="off"
-              aria-hidden="true"
-            />
-
-            <label for="fb-message">Mensaje</label>
-            <textarea
-              id="fb-message"
-              name="mensaje"
-              rows="5"
-              required
-              maxlength="2000"
-            ></textarea>
-
-            <div class="feedback-row">
-              <input
-                id="fb-email"
-                type="email"
-                name="email"
-                aria-label="Correo, opcional"
-                autocomplete="email"
-                maxlength="120"
-                placeholder="Correo (opcional)"
-              />
-              <button class="btn btn-primary" type="submit" id="fb-send">Enviar</button>
-            </div>
-
-            <p class="feedback-status" id="feedback-status" role="status" aria-live="polite"></p>
-          </form>
+          <p class="contact-status" id="contact-status" role="status" aria-live="polite"></p>
         </div>
       </section>
     </main>
@@ -984,6 +900,8 @@
         sha256: 'E2A8C1C8099FCBAC3AD960BD04894F6DF17D2AA5321F1F269EA308D2C606BAB3',
         // Enlace de apoyo (paypal.me/... o ko-fi.com/...). Vacío = no se muestra.
         apoyo: 'https://paypal.me/sebacred',
+        // WhatsApp de contacto, con prefijo del país. Vacío = no se muestra.
+        whatsapp: '',
       };
 
       const { user, repo, version, file, size, shortSize, sha256 } = SITE;
@@ -1043,54 +961,52 @@
       });
 
       // ---------------------------------------------------------------------
-      // Feedback: envía sin recargar. Sin JavaScript, el formulario sigue
-      // funcionando con su action/method normal.
+      // Contacto: copiar el correo y abrir WhatsApp.
       // ---------------------------------------------------------------------
-      const fbForm = document.getElementById('feedback-form');
-      const fbSend = document.getElementById('fb-send');
-      const fbStatus = document.getElementById('feedback-status');
+      const CORREO = 'estebanquerecuto8@gmail.com';
+      const copyEmail = document.getElementById('copy-email');
+      const contactStatus = document.getElementById('contact-status');
 
-      fbForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
+      copyEmail.addEventListener('click', async () => {
+        let ok = false;
+        try {
+          await navigator.clipboard.writeText(CORREO);
+          ok = true;
+        } catch {
+          // Respaldo para navegadores sin permiso de portapapeles.
+          const tmp = document.createElement('textarea');
+          tmp.value = CORREO;
+          tmp.setAttribute('readonly', '');
+          tmp.style.position = 'fixed';
+          tmp.style.opacity = '0';
+          document.body.appendChild(tmp);
+          tmp.select();
+          try {
+            ok = document.execCommand('copy');
+          } catch {}
+          tmp.remove();
+        }
 
-        const data = Object.fromEntries(new FormData(fbForm).entries());
-        const texto = (data.mensaje || '').trim();
-        if (!texto) {
-          fbStatus.dataset.ok = '0';
-          fbStatus.textContent = 'Escribe primero tu mensaje.';
-          document.getElementById('fb-message').focus();
+        if (!ok) {
+          contactStatus.textContent = `No se pudo copiar. Mi correo es ${CORREO}`;
           return;
         }
 
-        fbSend.disabled = true;
-        fbSend.textContent = 'Enviando…';
-        fbStatus.dataset.ok = '';
-        fbStatus.textContent = '';
-
-        try {
-          const res = await fetch('https://formsubmit.co/ajax/estebanquerecuto8@gmail.com', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: JSON.stringify({ ...data, mensaje: texto }),
-          });
-          const json = await res.json().catch(() => ({}));
-
-          if (!res.ok || json.success === 'false' || json.success === false) {
-            throw new Error(json.message || 'error');
-          }
-
-          fbForm.reset();
-          fbStatus.dataset.ok = '1';
-          fbStatus.textContent = 'Recibido. Gracias por tomarte el tiempo de escribir.';
-        } catch {
-          fbStatus.dataset.ok = '0';
-          fbStatus.innerHTML =
-            'No se pudo enviar. Inténtalo de nuevo en un minuto o <a href="mailto:estebanquerecuto8@gmail.com?subject=Dreink%20%E2%80%94%20comentario">escríbeme directamente</a>.';
-        } finally {
-          fbSend.disabled = false;
-          fbSend.textContent = 'Enviar';
-        }
+        copyEmail.textContent = 'Copiado';
+        copyEmail.dataset.done = '1';
+        contactStatus.innerHTML = `Mi correo es <a href="mailto:${CORREO}">${CORREO}</a>`;
+        setTimeout(() => {
+          copyEmail.textContent = 'Copiar correo';
+          copyEmail.dataset.done = '0';
+        }, 2000);
       });
+
+      if (SITE.whatsapp) {
+        const wa = document.getElementById('whatsapp');
+        const numero = SITE.whatsapp.replace(/[^\d]/g, '');
+        wa.href = `https://wa.me/${numero}`;
+        wa.hidden = false;
+      }
     </script>
   </body>
 </html>
