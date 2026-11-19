@@ -596,38 +596,38 @@
         color: var(--text-2);
       }
 
-      .contact-actions {
+      .contact-links {
         display: flex;
         flex-wrap: wrap;
+        align-items: baseline;
         gap: 8px;
-        margin-top: 20px;
+        margin: 20px 0 0;
+        font-size: 14.5px;
       }
 
-      .contact-actions .btn {
-        font-size: 13.5px;
-        font-weight: 600;
-        padding: 8px 14px;
-        background: var(--surface);
+      .contact-links a {
         color: var(--text);
-        border: 1px solid var(--border);
-        border-radius: var(--r);
+        font-weight: 600;
+        text-decoration: underline;
+        text-underline-offset: 3px;
         cursor: pointer;
-        font-family: inherit;
       }
 
-      .contact-actions .btn:hover {
-        border-color: var(--text-2);
-        background: var(--surface);
-        transform: none;
+      .contact-links a:hover {
+        color: var(--dreink);
       }
 
-      .contact-actions .btn[hidden] {
-        display: none;
-      }
-
-      .contact-actions .btn[data-done='1'] {
-        border-color: var(--accent);
+      .contact-links a[data-done='1'] {
         color: var(--accent);
+        text-decoration: none;
+      }
+
+      .contact-links .sep {
+        color: var(--text-2);
+      }
+
+      .contact-links [hidden] {
+        display: none;
       }
 
       .contact-status {
@@ -858,21 +858,13 @@
           <h2>Contacto</h2>
           <p class="contact-note">Un problema, una idea o simplemente qué te parece Dreink.</p>
 
-          <div class="contact-actions">
-            <button class="btn" type="button" id="copy-email" data-done="0">
-              Copiar correo
-            </button>
-            <a
-              class="btn"
-              id="whatsapp"
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
-              hidden
+          <p class="contact-links">
+            <a href="#" id="copy-email" data-done="0">Copiar correo</a>
+            <span class="sep" id="contact-sep">·</span>
+            <a id="whatsapp" href="https://wa.me/584120883117" target="_blank" rel="noopener noreferrer"
+              >WhatsApp</a
             >
-              WhatsApp
-            </a>
-          </div>
+          </p>
 
           <p class="contact-status" id="contact-status" role="status" aria-live="polite"></p>
         </div>
@@ -1016,6 +1008,9 @@
         const numero = SITE.whatsapp.replace(/[^\d]/g, '');
         wa.href = `https://wa.me/${numero}`;
         wa.hidden = false;
+      } else {
+        document.getElementById('whatsapp').hidden = true;
+        document.getElementById('contact-sep').hidden = true;
       }
     </script>
   </body>
