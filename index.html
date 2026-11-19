@@ -587,6 +587,109 @@
         color: var(--text-2);
       }
 
+      /* ---------- Feedback ---------- */
+
+      .feedback {
+        max-width: 620px;
+        margin-top: 22px;
+      }
+
+      .feedback-note {
+        margin: -14px 0 0;
+        max-width: 56ch;
+        font-size: 15px;
+        color: var(--text-2);
+      }
+
+      .feedback label {
+        display: block;
+        margin: 0 0 7px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-2);
+      }
+
+      .feedback textarea,
+      .feedback input[type='email'] {
+        width: 100%;
+        font: inherit;
+        font-size: 15px;
+        line-height: 1.5;
+        color: var(--text);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        padding: 12px 14px;
+      }
+
+      .feedback textarea {
+        min-height: 132px;
+        resize: vertical;
+      }
+
+      .feedback textarea::placeholder,
+      .feedback input[type='email']::placeholder {
+        color: var(--text-2);
+        opacity: 0.85;
+      }
+
+      .feedback textarea:focus,
+      .feedback input[type='email']:focus {
+        border-color: var(--text-2);
+      }
+
+      .feedback-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .feedback-row input[type='email'] {
+        flex: 1 1 220px;
+        min-width: 0;
+      }
+
+      .feedback-row .btn {
+        border: 1px solid transparent;
+        cursor: pointer;
+        font-family: inherit;
+        padding: 12px 22px;
+      }
+
+      .feedback-row .btn[disabled] {
+        opacity: 0.6;
+        cursor: progress;
+        transform: none;
+      }
+
+      .feedback-status {
+        margin: 14px 0 0;
+        font-size: 13.5px;
+        color: var(--text-2);
+      }
+
+      .feedback-status:empty {
+        display: none;
+      }
+
+      .feedback-status[data-ok='1'] {
+        color: var(--accent);
+      }
+
+      .feedback-status[data-ok='0'] {
+        color: var(--dreink);
+      }
+
+      /* Trampa antispam: invisible para las personas, visible para los bots. */
+      .honey {
+        position: absolute;
+        left: -9999px;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+      }
+
       /* ---------- Pie ---------- */
 
       footer {
@@ -795,6 +898,58 @@
           </details>
         </div>
       </section>
+
+      <section id="feedback">
+        <div class="wrap">
+          <h2>Comentarios</h2>
+          <p class="feedback-note">Un problema, una idea o simplemente qué te parece Dreink.</p>
+
+          <form
+            class="feedback"
+            id="feedback-form"
+            action="https://formsubmit.co/estebanquerecuto8@gmail.com"
+            method="POST"
+          >
+            <input type="hidden" name="_subject" value="Dreink — comentario" />
+            <input type="hidden" name="_template" value="table" />
+            <input type="hidden" name="_captcha" value="false" />
+            <input type="hidden" name="_next" value="https://dreinkapp.github.io/#feedback" />
+
+            <input
+              class="honey"
+              type="text"
+              name="_honey"
+              tabindex="-1"
+              autocomplete="off"
+              aria-hidden="true"
+            />
+
+            <label for="fb-message">Mensaje</label>
+            <textarea
+              id="fb-message"
+              name="mensaje"
+              rows="5"
+              required
+              maxlength="2000"
+            ></textarea>
+
+            <div class="feedback-row">
+              <input
+                id="fb-email"
+                type="email"
+                name="email"
+                aria-label="Correo, opcional"
+                autocomplete="email"
+                maxlength="120"
+                placeholder="Correo (opcional)"
+              />
+              <button class="btn btn-primary" type="submit" id="fb-send">Enviar</button>
+            </div>
+
+            <p class="feedback-status" id="feedback-status" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
     </main>
 
     <footer>
@@ -885,6 +1040,56 @@
         try {
           localStorage.setItem('dreink-theme', next);
         } catch {}
+      });
+
+      // ---------------------------------------------------------------------
+      // Feedback: envía sin recargar. Sin JavaScript, el formulario sigue
+      // funcionando con su action/method normal.
+      // ---------------------------------------------------------------------
+      const fbForm = document.getElementById('feedback-form');
+      const fbSend = document.getElementById('fb-send');
+      const fbStatus = document.getElementById('feedback-status');
+
+      fbForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const data = Object.fromEntries(new FormData(fbForm).entries());
+        const texto = (data.mensaje || '').trim();
+        if (!texto) {
+          fbStatus.dataset.ok = '0';
+          fbStatus.textContent = 'Escribe primero tu mensaje.';
+          document.getElementById('fb-message').focus();
+          return;
+        }
+
+        fbSend.disabled = true;
+        fbSend.textContent = 'Enviando…';
+        fbStatus.dataset.ok = '';
+        fbStatus.textContent = '';
+
+        try {
+          const res = await fetch('https://formsubmit.co/ajax/estebanquerecuto8@gmail.com', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ ...data, mensaje: texto }),
+          });
+          const json = await res.json().catch(() => ({}));
+
+          if (!res.ok || json.success === 'false' || json.success === false) {
+            throw new Error(json.message || 'error');
+          }
+
+          fbForm.reset();
+          fbStatus.dataset.ok = '1';
+          fbStatus.textContent = 'Recibido. Gracias por tomarte el tiempo de escribir.';
+        } catch {
+          fbStatus.dataset.ok = '0';
+          fbStatus.innerHTML =
+            'No se pudo enviar. Si es la primera vez, el formulario aún necesita activarse (revisa el correo del proyecto). También puedes <a href="mailto:estebanquerecuto8@gmail.com?subject=Dreink%20%E2%80%94%20comentario">escribirme directamente</a>.';
+        } finally {
+          fbSend.disabled = false;
+          fbSend.textContent = 'Enviar';
+        }
       });
     </script>
   </body>
