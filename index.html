@@ -901,7 +901,7 @@
         // Enlace de apoyo (paypal.me/... o ko-fi.com/...). Vacío = no se muestra.
         apoyo: 'https://paypal.me/sebacred',
         // WhatsApp de contacto, con prefijo del país. Vacío = no se muestra.
-        whatsapp: '',
+        whatsapp: '+584120883117',
       };
 
       const { user, repo, version, file, size, shortSize, sha256 } = SITE;
@@ -994,7 +994,6 @@
 
         copyEmail.textContent = 'Copiado';
         copyEmail.dataset.done = '1';
-        contactStatus.innerHTML = `Mi correo es <a href="mailto:${CORREO}">${CORREO}</a>`;
         setTimeout(() => {
           copyEmail.textContent = 'Copiar correo';
           copyEmail.dataset.done = '0';
