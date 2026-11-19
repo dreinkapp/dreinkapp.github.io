@@ -599,14 +599,26 @@
       .contact-actions {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 22px;
+        gap: 8px;
+        margin-top: 20px;
       }
 
       .contact-actions .btn {
-        border: 1px solid transparent;
+        font-size: 13.5px;
+        font-weight: 600;
+        padding: 8px 14px;
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
         cursor: pointer;
         font-family: inherit;
+      }
+
+      .contact-actions .btn:hover {
+        border-color: var(--text-2);
+        background: var(--surface);
+        transform: none;
       }
 
       .contact-actions .btn[hidden] {
@@ -614,9 +626,8 @@
       }
 
       .contact-actions .btn[data-done='1'] {
-        background: var(--surface);
         border-color: var(--accent);
-        color: var(--text);
+        color: var(--accent);
       }
 
       .contact-status {
@@ -848,11 +859,11 @@
           <p class="contact-note">Un problema, una idea o simplemente qué te parece Dreink.</p>
 
           <div class="contact-actions">
-            <button class="btn btn-small" type="button" id="copy-email" data-done="0">
+            <button class="btn" type="button" id="copy-email" data-done="0">
               Copiar correo
             </button>
             <a
-              class="btn btn-small"
+              class="btn"
               id="whatsapp"
               href="#"
               target="_blank"
